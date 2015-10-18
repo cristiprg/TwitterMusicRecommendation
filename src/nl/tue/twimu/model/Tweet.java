@@ -27,6 +27,11 @@ public class Tweet implements Serializable{
 		this.timestamp = timestamp;
 	}
 	
+	//TODO: why do we need the timestamp?
+	public Tweet(String text){
+		this(text, new Date());
+	}
+	
 	//internal method, do not care
 	private List<String> getMatches(Pattern p) {
 		LinkedList<String> l = new LinkedList<>();

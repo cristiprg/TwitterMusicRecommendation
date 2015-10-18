@@ -8,14 +8,15 @@ public class Artist implements Serializable{
 	//needed for serialization
 	private static final long serialVersionUID = 1L;
 	
-	public String twitterid; //justinbieber		//without @ in front
+	//public String twitterid; //justinbieber		//without @ in front
+	public Long twitterid; // just a big integer
 	public String handle;   //Justin Bieber
 	public ArrayList<Tweet> tweets = new ArrayList<>();
 	
 	public LinkedList<String> idCache;
 	public LinkedList<String> hashCache;
 	
-	public Artist(String twitterid, String handle) {
+	public Artist(Long twitterid, String handle) {
 		super();
 		this.twitterid = twitterid;
 		this.handle = handle;
@@ -25,7 +26,7 @@ public class Artist implements Serializable{
 		return handle;
 	}
 	
-	public String getTwitterid() {
+	public Long getTwitterid() {
 		return twitterid;
 	}
 	

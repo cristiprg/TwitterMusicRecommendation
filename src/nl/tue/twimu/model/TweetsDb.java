@@ -8,22 +8,29 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.TreeMap;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.apache.log4j.Logger;
+
+import nl.tue.twimu.ir.Indexer;
+
 public class TweetsDb implements Serializable {
+	final static Logger logger = Logger.getLogger(TweetsDb.class);
+	
 	//needed for serialization
 	private static final long serialVersionUID = 1L;
 	public static final String fileName = "tw.db.gz";
 	
 	//list of all artists
-	public TreeMap<String, Artist> artists;
+	public TreeMap<Long, Artist> artists;
 	//the two kinds of caches for the popular querys
 	protected TreeMap<String, Integer> idCache;
-	protected TreeMap<String, Integer> hashCache;
+	protected TreeMap<String, Integer> hashCache; 
 	
 	//save to cache in gzip-compressed version
 	public static TweetsDb loadFromCache() throws FileNotFoundException, IOException, ClassNotFoundException{
@@ -39,7 +46,7 @@ public class TweetsDb implements Serializable {
 		artists = new TreeMap<>();
 	}
 	
-	public TreeMap<String, Artist> getArtists() {
+	public TreeMap<Long, Artist> getArtists() {
 		return artists;
 	}
 	
@@ -54,12 +61,20 @@ public class TweetsDb implements Serializable {
 	//add a new artist, addArtist(new Artist
 	public void addArtist(Artist artist) {
 		artists.put(artist.getTwitterid(), artist);
+		logger.info("Added artist " + artist.getHandle());
 	}
+	
 	
 	//add a tweet from twitterhandle with text and timestamp
 	//addTweet("justinbieber", new Tweet("YOLO", new Date()));
-	public void addTweet(String twitterHandle, Tweet t) {
-		artists.get(twitterHandle).tweets.add(t);
+	public void addTweet(Long twitterID, Tweet t) {
+		artists.get(twitterID).tweets.add(t);
+	}
+	
+	//add a collection of tweets from twitterhandle with text
+	public void addTweets(Long twitterID, Collection<Tweet> tweets){
+		artists.get(twitterID).tweets.addAll(tweets);
+		logger.info("Added a lot of tweets for " + twitterID);
 	}
 	
 	//counts for mentioned hashtags/twitter handles
