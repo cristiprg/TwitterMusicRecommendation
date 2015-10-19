@@ -7,9 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.util.Version;
 
 import nl.tue.twimu.model.Artist;
 import nl.tue.twimu.model.Tweet;
+import nl.tue.twimu.ir.util.Stemmer;
 import pitt.search.lucene.PorterAnalyzer;
 
 /**
@@ -19,7 +22,9 @@ public class TFIDFMatrix {
 	private ArrayList<String> artists;
 	private ArrayList<String> terms;
 	private ArrayList<ArrayList<Double>> matrix;
-	private PorterAnalyzer porterAnalyzer = new PorterAnalyzer();
+	private Stemmer stemmer = new Stemmer();
+	private boolean doStemming = true;
+	
 	
 	public TFIDFMatrix(){
 		artists = new ArrayList<String>();
@@ -49,11 +54,8 @@ public class TFIDFMatrix {
 			// filter out zero-length strings, 
 			if (w.length() == 0) continue;
 			
-			// perform stemming on non-hashtags
-			if(w.getBytes()[0] != '#'){
-				//w = porterAnalyzer.stemQuery(w);
-			}
-			
+			w = termPreProcessing(w);
+
 			Integer n = map.get(w);
 			n = (n == null) ? 1 : ++n;
 			map.put(w, n);
@@ -118,6 +120,15 @@ public class TFIDFMatrix {
 		return str.toString();
 	}
 
+	
+	public boolean isDoStemming() {
+		return doStemming;
+	}
+
+	public void setDoStemming(boolean doStemming) {
+		this.doStemming = doStemming;
+	}
+
 	/*
 	 * TODO: veeeery slow - change this
 	 */
@@ -131,5 +142,24 @@ public class TFIDFMatrix {
 		return -1;
 	}
 
+	private String termPreProcessing(String term){
+		// to lower case
+		term = term.toLowerCase();
+		
+		// remove trailing and leading non-aplhanumeric
+		// TODO: except the # character? to retain hashtags - (^[^a-z0-9#:]*|[^a-z0-9]*$)
+		term = term.replaceAll("(^[^a-z0-9]*|[^a-z0-9]*$)", "");
+		
+		
+		// perform stemming on non-hashtags
+		if(doStemming && term.length() >0 && term.getBytes()[0] != '#'){
+			//w = porterAnalyzer.stemQuery(w);
+			stemmer.add(term.toCharArray(), term.toCharArray().length);
+			stemmer.stem();
+			term = stemmer.toString();				
+		}
+		
+		return term;
+	}
 	
 }
