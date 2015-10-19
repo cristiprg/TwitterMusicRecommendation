@@ -162,7 +162,7 @@ public class TFIDFMatrix implements Serializable{
 			return 0.0;
 		
 		// tf * log (N/df)
-		return matrix.get(i).get(j) * Math.log(N / docFreq);		
+		return matrix.get(i).get(j) * Math.log((double)N / docFreq);		
 	}
 	
 	@Override
