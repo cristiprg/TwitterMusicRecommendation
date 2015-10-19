@@ -32,15 +32,16 @@ import pitt.search.lucene.PorterAnalyzer;
 public class TFIDFMatrix implements Serializable{
 	private ArrayList<String> artists;
 	private ArrayList<String> terms;
-	private ArrayList<ArrayList<Double>> matrix;
-	private boolean doStemming = true;
+	private ArrayList<Integer> df; // df[i] = document frequency of term i  
+	private ArrayList<ArrayList<Integer>> matrix;
 	public static final String fileName = "tfidf.gz";
 	
 	
 	public TFIDFMatrix(){
 		artists = new ArrayList<String>();
 		terms = new ArrayList<String>();
-		matrix = new ArrayList<ArrayList<Double>>();
+		matrix = new ArrayList<ArrayList<Integer>>();
+		df = new ArrayList<Integer>();
 	}
 	
 	public static TFIDFMatrix loadFromCache() throws FileNotFoundException, IOException, ClassNotFoundException{
@@ -93,7 +94,7 @@ public class TFIDFMatrix implements Serializable{
 		
 		// add one entry for each term vector - update length
 		for(int i = 0; i < terms.size(); ++i){
-			matrix.get(i).add((double) 0);
+			matrix.get(i).add(0);
 		}
 		
 		// add term into the right place 
@@ -103,15 +104,21 @@ public class TFIDFMatrix implements Serializable{
 			
 			if (index != -1){
 				// if found, add the frequency of the term - just update the last item
-				matrix.get(index).set(artists.size()-1, Double.valueOf(map.get(term)));
+				matrix.get(index).set(artists.size()-1, map.get(term));
+				
+				// increment the document frequency of the term
+				df.set(index, df.get(index)+1);				
 			}
 			else{
 				// if not found, 1) add the new term to the list of terms and 2) create a new entry in the 
 				// matrix, fill it with zero's everything but the current artist
 				terms.add(term);
-				ArrayList<Double> newTermVector = new ArrayList<Double>(Collections.nCopies(artists.size(), 0.0));
-				newTermVector.set(artists.size()-1, Double.valueOf(map.get(term)));
+				ArrayList<Integer> newTermVector = new ArrayList<Integer>(Collections.nCopies(artists.size(), 0));
+				newTermVector.set(artists.size()-1, map.get(term));
 				matrix.add(newTermVector);
+				
+				// also, add a new entry in the document frequency 
+				df.add(1);
 			}
 		}
 	}
@@ -128,8 +135,34 @@ public class TFIDFMatrix implements Serializable{
 		return terms;
 	}
 	
-	public ArrayList<ArrayList<Double>> getMatrix(){
+	private ArrayList<ArrayList<Integer>> getMatrix(){
 		return matrix;
+	}
+	
+	/**
+	 * Returns an item in the tf.idf matrix.
+	 * @param i Index of term
+	 * @param j Index of artist
+	 * @return corresponding tf.idf value 
+	 */
+	public Double getItem(int i, int j){		
+		// preconditions: i and j within bounds
+		if (!(i >= 0 && i < df.size() && j >= 0 && j < artists.size()))
+			return 0.0;
+			
+			
+		int N = artists.size();
+		int docFreq = df.get(i);
+		
+		/*System.out.println("term = " + terms.get(i));
+		System.out.println("N = " + N);
+		System.out.println("docFreq = " + docFreq);*/
+		
+		if (docFreq == 0 )
+			return 0.0;
+		
+		// tf * log (N/df)
+		return matrix.get(i).get(j) * Math.log(N / docFreq);		
 	}
 	
 	@Override
@@ -147,15 +180,6 @@ public class TFIDFMatrix implements Serializable{
 		return str.toString();
 	}
 
-	
-	public boolean isDoStemming() {
-		return doStemming;
-	}
-
-	public void setDoStemming(boolean doStemming) {
-		this.doStemming = doStemming;
-	}
-
 	/*
 	 * TODO: veeeery slow - change this
 	 */
@@ -170,24 +194,7 @@ public class TFIDFMatrix implements Serializable{
 	}
 
 	private String termPreProcessing(String term){
-		// to lower case
-		term = term.toLowerCase();
-		
-		// remove trailing and leading non-aplhanumeric
-		// TODO: except the # character? to retain hashtags - (^[^a-z0-9#:]*|[^a-z0-9]*$)
-		term = term.replaceAll("(^[^a-z0-9]*|[^a-z0-9]*$)", "");
-		
-		
-		// perform stemming on non-hashtags
-		Stemmer stemmer = new Stemmer();
-		if(doStemming && term.length() >0 && term.getBytes()[0] != '#'){
-			//w = porterAnalyzer.stemQuery(w);
-			stemmer.add(term.toCharArray(), term.toCharArray().length);
-			stemmer.stem();
-			term = stemmer.toString();				
-		}
-		
-		return term;
+		return TermPreprocessor.termPreProcessing(term);
 	}
 	
 }

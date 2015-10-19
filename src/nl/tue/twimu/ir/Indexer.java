@@ -53,6 +53,22 @@ public class Indexer {
 		return matrix;
 	}
 	
+	/**
+	 * Get all the indexed artists
+	 * @return
+	 */
+	public ArrayList<String> getArtists(){
+		return matrix.getArtists();
+	}
+	
+	/**
+	 * Get all the indexed terms
+	 * @return
+	 */
+	public ArrayList<String> getTerms(){
+		return matrix.getTerms();
+	}
+	
 	private void computeTFIDFMatrix() {
 		
 		boolean DEBUG = true;

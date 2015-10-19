@@ -26,10 +26,7 @@ public class IndexerTest {
 	@Test
 	public void test() {
 		Indexer indexer = new Indexer();
-		Querier q = new Querier(
-				indexer.getMatrix().getArtists(),
-				indexer.getMatrix().getTerms(),
-				indexer.getMatrix().getMatrix());
+		Querier q = new Querier(indexer);
 		List<String> results = q.search("play");
 		System.out.println("Query: play");
 		for (String s : results)
