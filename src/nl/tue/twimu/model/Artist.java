@@ -14,7 +14,7 @@ public class Artist implements Serializable{
 	public ArrayList<Tweet> tweets = new ArrayList<>();
 	
 	public LinkedList<String> idCache;
-	public LinkedList<String> hashCache;
+	public LinkedList<String> hashCache;	
 	
 	public Artist(Long twitterid, String handle) {
 		super();

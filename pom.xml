@@ -32,7 +32,16 @@
 	<artifactId>log4j</artifactId>
 	<version>1.2.17</version>
 </dependency>
-
+<dependency>
+  <groupId>org.apache.commons</groupId>
+  <artifactId>commons-lang3</artifactId>
+  <version>3.4</version>
+</dependency>
+<dependency>
+	<groupId>pitt.search</groupId>
+	<artifactId>semanticvectors</artifactId>
+	<version>4.2</version>
+</dependency>
 
   </dependencies>
 </project>

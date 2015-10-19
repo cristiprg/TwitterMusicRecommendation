@@ -3,6 +3,8 @@ package nl.tue.twimu.ir;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,6 +17,7 @@ import org.apache.log4j.Logger;
 import nl.tue.twimu.model.TweetsDb;
 import nl.tue.twimu.ir.util.TwitterJSONReader;
 import nl.tue.twimu.model.Artist;
+import nl.tue.twimu.model.Tweet;
 
 /**
  * @author cristiprg
@@ -32,16 +35,44 @@ public class Indexer {
 	public Indexer(){
 		db = new TweetsDb();
 		matrix = new TFIDFMatrix();
-	
+		
 		// either populate the DB, or load it
 		try {
 			db = TweetsDb.loadFromCache();
 		} catch (ClassNotFoundException | IOException e) {
-			logger.warn("Could not load DB from cache. Repopulating DB...");
+			logger.warn("Could not load DB from cache. Repopulating DB and computing tf.idf matrix ...");
 			populateDB(new File("D:\\Scoala\\WIR&DM\\artisttweets"));
-		}		
+			//computeTFIDFMatrix();
+		}
+		
+		computeTFIDFMatrix();
+
 	}
 	
+	public TFIDFMatrix getMatrix(){
+		return matrix;
+	}
+	
+	private void computeTFIDFMatrix() {
+		
+		boolean DEBUG = true;
+		int count = 0;
+		
+		// each artist is a document here				
+		for (Artist artist : db.getArtists().values()){
+			logger.info("Adding artist to tf.idf matrix:" + artist.getHandle() );
+			
+			matrix.addAArtist(artist);
+			
+			if (DEBUG && ++count > 10){
+				break;
+			}
+		}
+		
+		//System.out.println(matrix.toString());
+	}
+
+
 	/**
 	 * Looks for each json file in dir. For now, each json is an artist with tweets. 
 	 */
@@ -73,13 +104,11 @@ public class Indexer {
 				db.addArtist(new Artist(twitterid, handle));
 				
 				// Artist's tweets			
-				db.addTweets(twitterid, TwitterJSONReader.getTweets(f.getAbsolutePath()));								
+				db.addTweets(twitterid, TwitterJSONReader.getTweets(f.getAbsolutePath()));					
 			} catch (IOException e) {
 				logger.error("Could not retrieve twitter handle from " + f.getAbsolutePath());
 				e.printStackTrace();				
-			}
-			
-        	
+			}			        
         }
         
         try {
