@@ -1,29 +1,40 @@
 package nl.tue.twimu.ir;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.util.Version;
 
 import nl.tue.twimu.model.Artist;
 import nl.tue.twimu.model.Tweet;
+import nl.tue.twimu.model.TweetsDb;
 import nl.tue.twimu.ir.util.Stemmer;
 import pitt.search.lucene.PorterAnalyzer;
 
 /**
  * @author cristiprg
  */
-public class TFIDFMatrix {
+public class TFIDFMatrix implements Serializable{
 	private ArrayList<String> artists;
 	private ArrayList<String> terms;
 	private ArrayList<ArrayList<Double>> matrix;
-	private Stemmer stemmer = new Stemmer();
 	private boolean doStemming = true;
+	public static final String fileName = "tfidf.gz";
 	
 	
 	public TFIDFMatrix(){
@@ -32,6 +43,22 @@ public class TFIDFMatrix {
 		matrix = new ArrayList<ArrayList<Double>>();
 	}
 	
+	public static TFIDFMatrix loadFromCache() throws FileNotFoundException, IOException, ClassNotFoundException{
+		File f = new File(fileName);
+		ObjectInputStream ois = new ObjectInputStream(new GZIPInputStream(new FileInputStream(f)));
+		TFIDFMatrix mat = (TFIDFMatrix)ois.readObject();
+		ois.close();
+		return mat;
+	}
+	
+	// overwrites old save, save to static file
+	public void save() throws FileNotFoundException, IOException {
+		File f = new File(fileName);
+		ObjectOutputStream ous = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream(f)));
+		ous.writeObject(this);
+		ous.close();
+	}
+
 	/*
 	 * This is repsonsible for counting TF and adding the terms into the right place
 	 * TODO: add IDF
@@ -152,6 +179,7 @@ public class TFIDFMatrix {
 		
 		
 		// perform stemming on non-hashtags
+		Stemmer stemmer = new Stemmer();
 		if(doStemming && term.length() >0 && term.getBytes()[0] != '#'){
 			//w = porterAnalyzer.stemQuery(w);
 			stemmer.add(term.toCharArray(), term.toCharArray().length);

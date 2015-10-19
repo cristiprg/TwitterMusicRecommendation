@@ -39,14 +39,14 @@ public class Indexer {
 		// either populate the DB, or load it
 		try {
 			db = TweetsDb.loadFromCache();
+			matrix = TFIDFMatrix.loadFromCache();
 		} catch (ClassNotFoundException | IOException e) {
 			logger.warn("Could not load DB from cache. Repopulating DB and computing tf.idf matrix ...");
+			
+			// OK, so compute then everything from scratch 
 			populateDB(new File("D:\\Scoala\\WIR&DM\\artisttweets"));
-			//computeTFIDFMatrix();
-		}
-		
-		computeTFIDFMatrix();
-
+			computeTFIDFMatrix();			
+		}		
 	}
 	
 	public TFIDFMatrix getMatrix(){
@@ -67,6 +67,13 @@ public class Indexer {
 			if (DEBUG && ++count > 10){
 				break;
 			}
+		}
+
+		try {
+			matrix.save();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 		
 		//System.out.println(matrix.toString());
