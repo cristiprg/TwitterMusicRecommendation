@@ -67,16 +67,11 @@ public class TFIDFMatrix implements Serializable{
 	public void addAArtist(Artist artist) {
 		artists.add(artist.getHandle());
 
-		// for each tweet, get the text
-		StringBuilder stringBuilder = new StringBuilder();
-		for (Tweet tweet : artist.getTweets()) {
-			stringBuilder.append(tweet.text + " ");
-		}
-
 		// now compute for each term
 		// TODO: replace by Lecene tokenizer
 		// http://stackoverflow.com/questions/21771566/calculating-frequency-of-each-word-in-a-sentence-in-java
-		String allTweets = stringBuilder.toString();
+		String allTweets = artist.getTweetsText();
+		
 		Map<String, Integer> map = new HashMap<>();
 		for (String w : allTweets.split("\\s")) {
 			// filter out zero-length strings, 

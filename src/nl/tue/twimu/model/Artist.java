@@ -53,6 +53,16 @@ public class Artist implements Serializable{
 	public ArrayList<Tweet> getTweets() {
 		return tweets;
 	}
+
+	public String getTweetsText() {
+		// for each tweet, get the text
+		StringBuilder stringBuilder = new StringBuilder();
+		for (Tweet tweet : getTweets()) {
+			stringBuilder.append(tweet.text + " ");
+		}
+
+		return stringBuilder.toString();
+	}
 	
 	@Override
 	public String toString() {
