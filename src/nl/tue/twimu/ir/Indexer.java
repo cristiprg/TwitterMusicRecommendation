@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
 import nl.tue.twimu.model.TweetsDb;
+import nl.tue.twimu.pagerank.PageRankBuilder;
 import nl.tue.twimu.model.Artist;
 
 /**
@@ -17,6 +18,8 @@ public class Indexer {
 	
 	private TweetsDb db;
 	private TFIDFMatrix matrix;
+
+	private PageRankBuilder pageRankBuilder;
 	
 	/**
 	 * New db and matrix;
@@ -26,6 +29,8 @@ public class Indexer {
 		
 		// either populate the DB, or load it
 		try {
+			logger.info("Loading objects from cache. Please be patient ...");
+			
 			db = TweetsDb.loadFromCache();
 			matrix = TFIDFMatrix.loadFromCache();		
 		} 
@@ -71,6 +76,10 @@ public class Indexer {
 				break;
 			}
 		}
+		
+		// set the page rank
+		pageRankBuilder = new PageRankBuilder(db);
+		matrix.setPageRank(pageRankBuilder.getPageRankArray());
 
 		try {
 			matrix.save();

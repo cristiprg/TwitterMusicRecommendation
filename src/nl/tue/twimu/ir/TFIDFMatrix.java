@@ -14,9 +14,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.util.Version;
 
@@ -30,13 +32,20 @@ import pitt.search.lucene.PorterAnalyzer;
  * @author cristiprg
  */
 public class TFIDFMatrix implements Serializable{
+	final static Logger logger = Logger.getLogger(TFIDFMatrix.class);
+	
 	private ArrayList<String> artists;
 	private ArrayList<String> terms;
 	private ArrayList<Integer> df; // df[i] = document frequency of term i  
 	private ArrayList<ArrayList<Integer>> matrix;
 	public static final String fileName = "tfidf.gz";
 	
+	public final static int NO_PAGE_RANK = 0;
+	public final static int USE_PAGE_RANK = 1;
+	public final static int USE_INVERTED_PAGE_RANK = 2;
 	
+	private ArrayList<Double> pageRank;
+
 	public TFIDFMatrix(){
 		artists = new ArrayList<String>();
 		terms = new ArrayList<String>();
@@ -140,7 +149,7 @@ public class TFIDFMatrix implements Serializable{
 	 * @param j Index of artist
 	 * @return corresponding tf.idf value 
 	 */
-	public Double getItem(int i, int j){		
+	private Double getItem(int i, int j){		
 		// preconditions: i and j within bounds
 		if (!(i >= 0 && i < df.size() && j >= 0 && j < artists.size()))
 			return 0.0;
@@ -159,6 +168,36 @@ public class TFIDFMatrix implements Serializable{
 		// tf * log (N/df)
 		return matrix.get(i).get(j) * Math.log((double)N / docFreq);		
 	}
+	
+	/**
+	 * Returns an item in the tf.idf matrix multiplied by the page rank
+	 * @param i Index of term
+	 * @param j Index of artist
+	 * @param pageRankType what type of page rank you want: 
+	 * 			*) NO_PAGE_RANK - simply, not use it, just return tf.idf
+	 * 			*) USE_PAGE_RANK - get the tf.idf + page_rank of artist
+	 * 			*) USE_INVERTED_PAGE_RANK - get the tf.idf + (1-page_rank) - useful for least popular artists, underground music
+	 * @return
+	 */
+	public Double getItem(int i, int j, int pageRankType){
+		//System.out.println("page rank " + artists.get(j) + " = " + pageRank.get(j));
+		switch (pageRankType) {
+		case NO_PAGE_RANK:
+			return getItem(i, j);
+		case USE_PAGE_RANK:
+			return getItem(i, j) + pageRank.get(j);
+		case USE_INVERTED_PAGE_RANK:
+			return getItem(i, j) + 1 - pageRank.get(j);
+		default:
+			logger.error("Unknown page rank type " + pageRankType + ". Using default USE_PAGE_RANK.");
+			return getItem(i, j) + pageRank.get(j);
+		}
+	}
+		
+	public void setPageRank(ArrayList<Double> pageRank) {
+		this.pageRank = pageRank;
+	}
+
 	
 	@Override
 	public String toString() {

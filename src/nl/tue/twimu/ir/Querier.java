@@ -3,22 +3,30 @@ package nl.tue.twimu.ir;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.tue.twimu.ml.ArtistNotFoundException;
+
 public class Querier {
 	private List<String> artists;
 	private List<String> terms;
 	// private List<ArrayList<Double>> matrix; // [i:term][j:artist]
 	private TFIDFMatrix matrix;
+	
+	private int pageRankType = matrix.USE_PAGE_RANK;
 
 	public final static int NUM_RESULTS = 3;
+	public static boolean detectedArtistQuery = false; 
+	
+	public final static double DEF_SCORE = 5.0;	
 
-	public Querier(List<String> artists, List<String> terms, TFIDFMatrix matrix) {
+	public Querier(List<String> artists, List<String> terms, TFIDFMatrix matrix, int pageRankType) {
 		this.artists = artists;
 		this.terms = terms;
 		this.matrix = matrix;
+		this.pageRankType = pageRankType;
 	}
 
-	public Querier(Indexer indexer) {
-		this(indexer.getArtists(), indexer.getTerms(), indexer.getMatrix());
+	public Querier(Indexer indexer, int pageRankType) {
+		this(indexer.getArtists(), indexer.getTerms(), indexer.getMatrix(), pageRankType);
 	}
 
 	@Deprecated
@@ -59,14 +67,14 @@ public class Querier {
 		// dot product of both artists
 		double dot = 0;
 		for (int i = 0; i < terms.size(); i++) {
-			dot += query[i] * matrix.getItem(i, artist2);
+			dot += query[i] * matrix.getItem(i, artist2, pageRankType);
 		}
 
 		// euclidean lengths
 		double euc1 = 0, euc2 = 0, euc;
 		for (int i = 0; i < terms.size(); i++) {
 			euc1 += Math.pow(query[i], 2);
-			euc2 += Math.pow(matrix.getItem(i, artist2), 2);
+			euc2 += Math.pow(matrix.getItem(i, artist2, pageRankType), 2);
 		}
 		euc = Math.sqrt(euc1) * Math.sqrt(euc2);
 
@@ -83,7 +91,7 @@ public class Querier {
 			score = 0;
 			for (String t : words) {
 				// score+=matrix.get(terms.indexOf(t)).get(j);
-				score += matrix.getItem(terms.indexOf(t), j);
+				score += matrix.getItem(terms.indexOf(t), j, pageRankType);
 			}
 			scores.add(score);
 		}
@@ -153,7 +161,7 @@ public class Querier {
 		double dot = 0;
 		for (int i = 0; i < terms.size(); i++) {
 			// dot += matrix.get(i).get(artist1)*matrix.get(i).get(artist2);
-			dot += matrix.getItem(i, artist1) * matrix.getItem(i, artist2);
+			dot += matrix.getItem(i, artist1, pageRankType) * matrix.getItem(i, artist2, pageRankType);
 		}
 
 		// euclidean lengths
@@ -162,12 +170,50 @@ public class Querier {
 			// euc1 += Math.pow(matrix.get(i).get(artist1), 2);
 			// euc2 += Math.pow(matrix.get(i).get(artist2), 2);
 
-			euc1 += Math.pow(matrix.getItem(i, artist1), 2);
-			euc2 += Math.pow(matrix.getItem(i, artist2), 2);
+			euc1 += Math.pow(matrix.getItem(i, artist1, pageRankType), 2);
+			euc2 += Math.pow(matrix.getItem(i, artist2, pageRankType), 2);
 		}
 		euc = Math.sqrt(euc1) * Math.sqrt(euc2);
 
 		return dot / euc;
+	}
+	
+	public static double[] queryValues(String query, TFIDFMatrix mx, int pageRankType) throws ArtistNotFoundException {
+		if (query.startsWith("@")){
+			return queryValuesArtist(query, mx, pageRankType);
+		}
+		else{
+			return queryValuesTerms(query, mx, pageRankType);
+		}
+	}
+	
+	private static double[] queryValuesArtist(String query, TFIDFMatrix mx, int pageRankType) throws ArtistNotFoundException {
+		detectedArtistQuery = true;
+		query = query.replaceFirst("@", "");
+		double[] values = new double[mx.getTerms().size()];
+		
+		//TODO: check if artist doesn't exist
+		int idx = mx.getArtists().indexOf(query);
+		if (idx == -1){
+			throw new ArtistNotFoundException("Artist not found: " + query, query);
+		}
+		
+		for(int i = 0; i<mx.getTerms().size(); i++) {
+			values[i] = mx.getItem(i, idx, pageRankType);
+		}
+				
+		return values;
+	}
+
+	private static double[] queryValuesTerms(String query, TFIDFMatrix mx, int pageRankType) {
+		detectedArtistQuery = false;
+		String[] words = query.replace(',', ' ').split(" ");
+		double[] values = new double[mx.getTerms().size()];
+		for (String w : words){
+			w = TermPreprocessor.termPreProcessing(w);
+			values[mx.getTerms().indexOf(w)] = DEF_SCORE;
+		}		
+		return values;
 	}
 
 	private void printList(List<Double> ls) {

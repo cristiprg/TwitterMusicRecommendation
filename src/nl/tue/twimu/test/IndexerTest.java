@@ -7,10 +7,12 @@ import java.util.List;
 import org.apache.log4j.BasicConfigurator;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import nl.tue.twimu.ir.Indexer;
 import nl.tue.twimu.ir.Querier;
+import nl.tue.twimu.ir.TFIDFMatrix;
 
 public class IndexerTest {
 
@@ -24,9 +26,10 @@ public class IndexerTest {
 	}
 
 	@Test
+	@Ignore
 	public void test() {
 		Indexer indexer = new Indexer();
-		Querier q = new Querier(indexer);
+		Querier q = new Querier(indexer, TFIDFMatrix.USE_PAGE_RANK);
 		List<String> results = q.search("play");
 		System.out.println("Query: play");
 		for (String s : results)

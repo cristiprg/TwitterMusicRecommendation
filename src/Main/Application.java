@@ -20,13 +20,17 @@ public class Application {
 	Querier querier;
 	Indexer indexer;
 	TFIDFMatrix mx;
+	int pageRankType;
 	
 	public Application() {
 		BasicConfigurator.configure();
+		pageRankType = TFIDFMatrix.USE_INVERTED_PAGE_RANK; // let user decide for this value
+		
 		indexer = new Indexer();
-		querier = new Querier(indexer);
+		querier = new Querier(indexer, pageRankType);
 		mx = indexer.getMatrix();
 	
+		
 	}
 	
 	public static void main(String[] args) {
@@ -48,8 +52,8 @@ public class Application {
 		double[] query = null;
 		try {
 			consoleInp = br.readLine();
-			query = Rocchio.queryValues(consoleInp, mx);			
-			results = querier.search(query, Rocchio.detectedArtistQuery);
+			query = Querier.queryValues(consoleInp, mx, pageRankType);			
+			results = querier.search(query, Querier.detectedArtistQuery);
 			
 			System.out.println("Results: ");
 			showResults(results);
@@ -69,7 +73,7 @@ public class Application {
 			System.out.println("calculating new results...");
 			Rocchio r = new Rocchio(mx, query, relevance);
 			query = r.getNewQuery();
-			results = querier.search(query, Rocchio.detectedArtistQuery);
+			results = querier.search(query, Querier.detectedArtistQuery);
 			System.out.println("Results: ");
 			showResults(results);
 			continu = continu();

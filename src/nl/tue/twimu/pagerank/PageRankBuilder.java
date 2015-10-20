@@ -28,7 +28,7 @@ public class PageRankBuilder {
 	
 	
 	private ArrayList<Artist> rankedArtists;
-	public ArrayList<Double> pageRankArray; // for debugging, seeing the actual values
+	private ArrayList<Double> pageRankArray; // useful for influencing the tf idf values
 	
 	public PageRankBuilder(TweetsDb db){
 		this.db = db;
@@ -177,6 +177,12 @@ public class PageRankBuilder {
 			++currentArtistIndex;
 		}
 	}
+	
+
+	public ArrayList<Double> getPageRankArray() {
+		return pageRankArray;
+	}
+
 		
 	private ArrayList<String> getMatches(String text){
 		Pattern pattern = Pattern.compile("@\\S*");
