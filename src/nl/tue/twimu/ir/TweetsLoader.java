@@ -19,9 +19,9 @@ public class TweetsLoader {
 	final static Logger logger = Logger.getLogger(TweetsLoader.class);
 	public final static String DEF_PATH = "d:\\Scoala\\WIR&DM\\artisttweets\\";
 
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		loadTweets(DEF_PATH);
-	}
+	}*/
 
 	public static TweetsDb loadTweets(String path) {
 		System.out.println("New Tweet Database is being created");
@@ -35,7 +35,7 @@ public class TweetsLoader {
 			try {
 				Artist artist = TwitterJSONReader.getTweetsAuthor(f);
 				db.addArtist(artist);
-				logger.info("Loading artist: " + artist.getName());
+				//logger.info("Loading artist: " + artist.getName());
 				ArrayList<Tweet> tweets = TwitterJSONReader.getTweets(f);
 				db.addTweets(artist.getTwitterid(), tweets);
 			} catch (IOException | ParseException e) {

@@ -61,7 +61,7 @@ public class TweetsDb implements Serializable {
 	//add a new artist, addArtist(new Artist
 	public void addArtist(Artist artist) {
 		artists.put(artist.getTwitterid(), artist);
-		logger.info("Added artist " + artist.getHandle());
+		//logger.info("Added artist " + artist.getHandle());
 	}
 	
 	
@@ -74,7 +74,7 @@ public class TweetsDb implements Serializable {
 	//add a collection of tweets from twitterhandle with text
 	public void addTweets(Long twitterID, Collection<Tweet> tweets){
 		artists.get(twitterID).tweets.addAll(tweets);
-		logger.info("Added a lot of tweets for " + twitterID);
+		//logger.info("Added a lot of tweets for " + twitterID);
 	}
 	
 	//counts for mentioned hashtags/twitter handles

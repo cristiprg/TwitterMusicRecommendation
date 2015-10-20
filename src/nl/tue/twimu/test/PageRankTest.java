@@ -36,6 +36,6 @@ public class PageRankTest {
 		ArrayList<Artist> rankedArtists =pageRankBuilder.getRankedArtists();
 		for(Artist a : rankedArtists)
 			System.out.println(a.getHandle());
-		System.out.println(pageRankBuilder.pageRankArray);
+		System.out.println(pageRankBuilder.getPageRankArray());
 	}
 }
