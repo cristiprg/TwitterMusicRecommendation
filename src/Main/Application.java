@@ -1,17 +1,8 @@
-package nl.tue.twimu.test;
+package Main;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
-import java.util.List;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
 import java.util.List;
 
 import nl.tue.twimu.ir.Indexer;
@@ -19,27 +10,30 @@ import nl.tue.twimu.ir.Querier;
 import nl.tue.twimu.ir.TFIDFMatrix;
 import nl.tue.twimu.ml.Rocchio;
 
-public class RocchioTest {
+public class Application {
 
 	private final static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	
-	@Before
-	public void setUp() throws Exception {
+	Querier querier;
+	Indexer indexer;
+	TFIDFMatrix mx;
+	
+	public Application() {
+		indexer = new Indexer();
+		querier = new Querier(indexer);
+		mx = indexer.getMatrix();
+	
 	}
-
-	@After
-	public void tearDown() throws Exception {
+	
+	public static void main(String[] args) {
+		Application app = new Application();
+		app.run();		
 	}
-
-	@Test
-	public void test() {
-		System.out.println("Hi! With this little app we'll test out the Rocchio feedback" + "component of our system.");
-
-		TFIDFMatrix mx = setUpMatrix();
-		Querier querier = new Querier(mx.getArtists(), mx.getTerms(), mx);
-
+	
+	private void run(){
 		System.out.println("First, input a query as either a set of terms or a twitter handle (don't"
-				+ "forget the @!)\n" + "The system is not robust! Please don't input non existent twitter handles!");
+				+ "forget the @!)\n" + "The system is not robust (not anymore, muahaha)! Please don't input non existent twitter handles!");
+		
 		String consoleInp = null;
 		List<String> results = null;
 		try {
@@ -65,32 +59,18 @@ public class RocchioTest {
 			continu = continu();
 		}	
 	}
-
-	// app
+	
+	/**
+	 * Prints the list with the results
+	 * @param results
+	 */
 	private static void showResults(List<String> results) {
 		int counter = 1;
 		for (String s : results)
 			System.out.println((counter++) + ") " + s);
 
 	}
-
-	// not needed
-	private static TFIDFMatrix setUpMatrix() {
-		TFIDFMatrix mx = null;
-		try {
-			mx = TFIDFMatrix.loadFromCache();
-			System.out.println("Data loaded from memory succesfully!");
-		} catch (Exception e) {
-			System.out.println("Oops! The date couldn't be loaded from memory... Attempting to create it again...");
-			// change this. Indexer should be implemented more transparently
-			Indexer i = new Indexer();
-			mx = i.getMatrix();
-			System.out.println("Data created succesfully!");
-		}
-		return mx;
-	}
-
-	// asks user what is relevant or not - 
+	
 	private static int[] getRelevance(TFIDFMatrix mx, List<String> results) {
 		int[] relevance = new int[mx.getArtists().size()];
 		try {
@@ -122,4 +102,5 @@ public class RocchioTest {
 		}
 		return false;
 	}
+
 }
