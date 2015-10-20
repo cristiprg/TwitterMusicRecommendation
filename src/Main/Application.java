@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
+import org.apache.log4j.BasicConfigurator;
+
 import nl.tue.twimu.ir.Indexer;
 import nl.tue.twimu.ir.Querier;
 import nl.tue.twimu.ir.TFIDFMatrix;
@@ -20,6 +22,7 @@ public class Application {
 	TFIDFMatrix mx;
 	
 	public Application() {
+		BasicConfigurator.configure();
 		indexer = new Indexer();
 		querier = new Querier(indexer);
 		mx = indexer.getMatrix();
