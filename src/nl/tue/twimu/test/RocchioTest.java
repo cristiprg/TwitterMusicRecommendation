@@ -17,6 +17,7 @@ import java.util.List;
 import nl.tue.twimu.ir.Indexer;
 import nl.tue.twimu.ir.Querier;
 import nl.tue.twimu.ir.TFIDFMatrix;
+import nl.tue.twimu.ml.ArtistNotFoundException;
 import nl.tue.twimu.ml.Rocchio;
 
 public class RocchioTest {
@@ -34,7 +35,7 @@ public class RocchioTest {
 	@Test
 	public void test() {
 		System.out.println("Hi! With this little app we'll test out the Rocchio feedback" + "component of our system.");
-
+/*
 		TFIDFMatrix mx = setUpMatrix();
 		Querier querier = new Querier(mx.getArtists(), mx.getTerms(), mx);
 
@@ -51,7 +52,14 @@ public class RocchioTest {
 			System.err.println("Error reading query from console");
 			e.printStackTrace();
 		}
-		double[] query = Rocchio.queryValues(consoleInp, mx);
+		double[] query;
+		try {
+			query = Rocchio.queryValues(consoleInp, mx);
+		} catch (ArtistNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		}
 		
 		boolean continu = continu();
 		while (continu) {
@@ -63,7 +71,8 @@ public class RocchioTest {
 			System.out.println("Results: ");
 			showResults(results);
 			continu = continu();
-		}	
+		}
+		*/	
 	}
 
 	// app

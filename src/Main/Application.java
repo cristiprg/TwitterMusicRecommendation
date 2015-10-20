@@ -8,6 +8,7 @@ import java.util.List;
 import nl.tue.twimu.ir.Indexer;
 import nl.tue.twimu.ir.Querier;
 import nl.tue.twimu.ir.TFIDFMatrix;
+import nl.tue.twimu.ml.ArtistNotFoundException;
 import nl.tue.twimu.ml.Rocchio;
 
 public class Application {
@@ -27,25 +28,37 @@ public class Application {
 	
 	public static void main(String[] args) {
 		Application app = new Application();
-		app.run();		
-	}
-	
-	private void run(){
+		
+		
 		System.out.println("First, input a query as either a set of terms or a twitter handle (don't"
 				+ "forget the @!)\n" + "The system is not robust (not anymore, muahaha)! Please don't input non existent twitter handles!");
 		
+		while(app.runQuery()){
+			;
+		}
+	}
+	
+	private boolean runQuery(){		
 		String consoleInp = null;
 		List<String> results = null;
+		
+		double[] query = null;
 		try {
 			consoleInp = br.readLine();
-			results = querier.search(consoleInp);
+			query = Rocchio.queryValues(consoleInp, mx);			
+			results = querier.search(query, Rocchio.detectedArtistQuery);
+			
 			System.out.println("Results: ");
 			showResults(results);
-		} catch (IOException e) {
+		} catch (ArtistNotFoundException e) {
+			System.out.println("Hey, we didn't find artist " + e.getArtist() + ". Try again!");
+			return true;
+		}
+		catch (IOException e) {
 			System.err.println("Error reading query from console");
 			e.printStackTrace();
-		}
-		double[] query = Rocchio.queryValues(consoleInp, mx);
+			return true;
+		}		
 		
 		boolean continu = continu();
 		while (continu) {
@@ -53,11 +66,13 @@ public class Application {
 			System.out.println("calculating new results...");
 			Rocchio r = new Rocchio(mx, query, relevance);
 			query = r.getNewQuery();
-			results = querier.search(query);
+			results = querier.search(query, Rocchio.detectedArtistQuery);
 			System.out.println("Results: ");
 			showResults(results);
 			continu = continu();
 		}	
+		
+		return false;
 	}
 	
 	/**

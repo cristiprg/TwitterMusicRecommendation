@@ -21,19 +21,38 @@ public class Querier {
 		this(indexer.getArtists(), indexer.getTerms(), indexer.getMatrix());
 	}
 
+	@Deprecated
 	public List<String> search(String query) {
 		if (query.startsWith("@"))
 			return searchByArtist(query);
-		return searchByTerms(query);
+		return searchByTerms(query);	
+		
+	}
+	
+	/**
+	 * By default, we search NOT by artist
+	 * @param query
+	 * @return
+	 */
+	public List<String> search(double[] query){
+		return search(query, false);
 	}
 
-	public List<String> search(double[] query) {
+	public List<String> search(double[] query, boolean byArtists) {
 		ArrayList<Double> similarities = new ArrayList<Double>();
 
 		for (int j = 0; j < artists.size(); j++)
 			similarities.add(similarity(query, j));
 
-		return getTop(similarities);
+		/*
+		 * If we search by artist, remove the first resulted-item, since it is the same as the search query 
+		 */
+		List<String> results = getTop(similarities);
+		if(byArtists){
+			results.remove(0); 
+		}
+		
+		return results;
 	}
 
 	private Double similarity(double[] query, int artist2) {
@@ -54,6 +73,7 @@ public class Querier {
 		return dot / euc;
 	}
 
+	@Deprecated
 	private List<String> searchByTerms(String query) {
 		List<String> words = fixQuery(query);
 		System.out.println("Searching for " + words);
@@ -82,6 +102,7 @@ public class Querier {
 		return ret;
 	}
 
+	@Deprecated
 	private List<String> searchByArtist(String artist) {
 		ArrayList<Double> similarities = new ArrayList<Double>();
 		int idxArt = artists.indexOf(artist);
@@ -113,7 +134,7 @@ public class Querier {
 			top.add(artists.get(idx));
 			counter++;
 			similarities.set(idx, -1.0);
-		} while (counter < NUM_RESULTS);
+		} while (counter < NUM_RESULTS + 1);
 		return top;
 	}
 

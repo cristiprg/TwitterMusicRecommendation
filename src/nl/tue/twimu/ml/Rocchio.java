@@ -16,6 +16,7 @@ public class Rocchio {
 
 	public final static double ALPHA = 1.0, BETA = 0.75, GAMMA = 0.15;
 	public final static double DEF_SCORE = 5.0;
+	public static boolean detectedArtistQuery = false; 
 
 	public Rocchio(TFIDFMatrix tf, double[] query, int[] relevance) {
 		this.tf = tf;
@@ -25,7 +26,35 @@ public class Rocchio {
 		countRelevant();
 	}
 	
-	public static double[] queryValues(String query, TFIDFMatrix mx) {
+	public static double[] queryValues(String query, TFIDFMatrix mx) throws ArtistNotFoundException {
+		if (query.startsWith("@")){
+			return queryValuesArtist(query, mx);
+		}
+		else{
+			return queryValuesTerms(query, mx);
+		}
+	}
+	
+	private static double[] queryValuesArtist(String query, TFIDFMatrix mx) throws ArtistNotFoundException {
+		detectedArtistQuery = true;
+		query = query.replaceFirst("@", "");
+		double[] values = new double[mx.getTerms().size()];
+		
+		//TODO: check if artist doesn't exist
+		int idx = mx.getArtists().indexOf(query);
+		if (idx == -1){
+			throw new ArtistNotFoundException("Artist not found: " + query, query);
+		}
+		
+		for(int i = 0; i<mx.getTerms().size(); i++) {
+			values[i] = mx.getItem(i, idx);
+		}
+				
+		return values;
+	}
+
+	private static double[] queryValuesTerms(String query, TFIDFMatrix mx) {
+		detectedArtistQuery = false;
 		String[] words = query.replace(',', ' ').split(" ");
 		double[] values = new double[mx.getTerms().size()];
 		for (String w : words){
