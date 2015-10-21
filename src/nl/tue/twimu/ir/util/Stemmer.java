@@ -34,8 +34,9 @@ package nl.tue.twimu.ir.util;
    Release 4
 
 */
-
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
   * Stemmer, implementing the Porter Stemming Algorithm
@@ -414,6 +415,7 @@ public class Stemmer
               if (ch < 0) break;
               System.out.print((char)ch);
            }
+         in.close();
          }
          catch (IOException e)
          {  System.out.println("error reading " + args[i]);

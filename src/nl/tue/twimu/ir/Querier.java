@@ -3,15 +3,13 @@ package nl.tue.twimu.ir;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.tue.twimu.ml.ArtistNotFoundException;
-
 public class Querier {
 	private List<String> artists;
 	private List<String> terms;
 	// private List<ArrayList<Double>> matrix; // [i:term][j:artist]
 	private TFIDFMatrix matrix;
 	
-	private int pageRankType = matrix.USE_PAGE_RANK;
+	private int pageRankType = TFIDFMatrix.USE_PAGE_RANK;
 
 	public final static int NUM_RESULTS = 3;
 	public static boolean detectedArtistQuery = false; 
@@ -178,7 +176,7 @@ public class Querier {
 		return dot / euc;
 	}
 	
-	public static double[] queryValues(String query, TFIDFMatrix mx, int pageRankType) throws ArtistNotFoundException {
+	public static double[] queryValues(String query, TFIDFMatrix mx, int pageRankType) throws Exception {
 		if (query.startsWith("@")){
 			return queryValuesArtist(query, mx, pageRankType);
 		}
@@ -187,7 +185,7 @@ public class Querier {
 		}
 	}
 	
-	private static double[] queryValuesArtist(String query, TFIDFMatrix mx, int pageRankType) throws ArtistNotFoundException {
+	private static double[] queryValuesArtist(String query, TFIDFMatrix mx, int pageRankType) throws Exception {
 		detectedArtistQuery = true;
 		query = query.replaceFirst("@", "");
 		double[] values = new double[mx.getTerms().size()];
@@ -195,7 +193,7 @@ public class Querier {
 		//TODO: check if artist doesn't exist
 		int idx = mx.getArtists().indexOf(query);
 		if (idx == -1){
-			throw new ArtistNotFoundException("Artist not found: " + query, query);
+			throw new Exception("Artist not found: " + query);
 		}
 		
 		for(int i = 0; i<mx.getTerms().size(); i++) {
@@ -215,10 +213,11 @@ public class Querier {
 		}		
 		return values;
 	}
-
-	private void printList(List<Double> ls) {
+	
+	//You can simply print the list. It has a toString
+	/*private void printList(List<Double> ls) {
 		for (Double d : ls)
 			System.out.print(d + "||");
 		System.out.println();
-	}
+	}*/
 }

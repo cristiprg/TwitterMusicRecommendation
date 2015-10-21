@@ -2,10 +2,7 @@ package nl.tue.twimu.ml;
 
 import java.util.ArrayList;
 
-import org.apache.lucene.index.Term;
-
 import nl.tue.twimu.ir.TFIDFMatrix;
-import nl.tue.twimu.ir.TermPreprocessor;
 
 public class Rocchio {
 	private TFIDFMatrix tf;
@@ -14,7 +11,7 @@ public class Rocchio {
 	private int relevantArtists, irrelevantArtists;
 	private ArrayList<String> artists;
 	
-	private int pageRankType = tf.USE_PAGE_RANK;
+	private int pageRankType = TFIDFMatrix.USE_PAGE_RANK;
 
 	public final static double ALPHA = 1.0, BETA = 0.75, GAMMA = 0.15;
 

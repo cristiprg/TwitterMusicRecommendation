@@ -17,7 +17,7 @@ import nl.tue.twimu.model.TweetsDb;
 
 public class TweetsLoader {
 	final static Logger logger = Logger.getLogger(TweetsLoader.class);
-	public final static String DEF_PATH = "d:\\Scoala\\WIR&DM\\artisttweets\\";
+	public final static String DEF_PATH = "../twitterdata/artisttweets";
 
 	/*public static void main(String[] args) {
 		loadTweets(DEF_PATH);
@@ -30,6 +30,15 @@ public class TweetsLoader {
 		// Get all the files from path
 		ArrayList<File> files = new ArrayList<>();
 		files.addAll(FileUtils.listFiles(new File(path), new SuffixFileFilter(".json"), TrueFileFilter.INSTANCE));
+		
+		if (files.size()>0)
+			logger.info(files.size()+" files found.");
+		else
+			throw new RuntimeException("No files found in "+DEF_PATH+
+		"\nYou should get the files from \n"
+		+ "https://drive.google.com/file/d/0B0WeCG8MqKA1WWl2Tjl3QjNuS00/view?usp=sharing_eid&ts=561ade59\n"
+		+ "But only use artist-tweets."); 
+		
 
 		for (File f : files) {
 			try {

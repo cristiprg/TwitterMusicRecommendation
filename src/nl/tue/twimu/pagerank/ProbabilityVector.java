@@ -13,6 +13,8 @@ public class ProbabilityVector {
 	 * @param size the size of the vector
 	 */
 	ProbabilityVector(int size){	
+		if(size==0)
+			throw new RuntimeException("Size is zero.");
 		vector = new ArrayList<Double>(Collections.nCopies(size, 0.0));
 		//vector.set(0, 1.0);
 	}

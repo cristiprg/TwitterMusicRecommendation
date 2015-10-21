@@ -1,18 +1,8 @@
 package nl.tue.twimu.test;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
 import org.apache.log4j.BasicConfigurator;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import nl.tue.twimu.ir.Indexer;
-import nl.tue.twimu.ir.Querier;
-import nl.tue.twimu.ir.TFIDFMatrix;
 
 public class IndexerTest {
 
@@ -25,7 +15,7 @@ public class IndexerTest {
 	public void tearDown() throws Exception {
 	}
 
-	@Test
+	/*@Test
 	@Ignore
 	public void test() {
 		Indexer indexer = new Indexer();
@@ -40,6 +30,6 @@ public class IndexerTest {
 		System.out.println("Query: #smart, #pretty");
 		for (String s : results)
 			System.out.println(s);
-	}
+	}*/
 
 }

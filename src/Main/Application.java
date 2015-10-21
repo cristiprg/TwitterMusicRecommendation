@@ -10,7 +10,6 @@ import org.apache.log4j.BasicConfigurator;
 import nl.tue.twimu.ir.Indexer;
 import nl.tue.twimu.ir.Querier;
 import nl.tue.twimu.ir.TFIDFMatrix;
-import nl.tue.twimu.ml.ArtistNotFoundException;
 import nl.tue.twimu.ml.Rocchio;
 
 public class Application {
@@ -22,17 +21,6 @@ public class Application {
 	TFIDFMatrix mx;
 	int pageRankType;
 	
-	public Application() {
-		BasicConfigurator.configure();
-		pageRankType = TFIDFMatrix.USE_INVERTED_PAGE_RANK; // let user decide for this value
-		
-		indexer = new Indexer();
-		querier = new Querier(indexer, pageRankType);
-		mx = indexer.getMatrix();
-	
-		
-	}
-	
 	public static void main(String[] args) {
 		Application app = new Application();
 		
@@ -43,6 +31,17 @@ public class Application {
 		while(app.runQuery()){
 			;
 		}
+	}
+	
+	public Application() {
+		BasicConfigurator.configure();
+		pageRankType = TFIDFMatrix.USE_INVERTED_PAGE_RANK; // let user decide for this value
+		
+		indexer = new Indexer();
+		querier = new Querier(indexer, pageRankType);
+		mx = indexer.getMatrix();
+	
+		
 	}
 	
 	private boolean runQuery(){		
@@ -57,15 +56,16 @@ public class Application {
 			
 			System.out.println("Results: ");
 			showResults(results);
-		} catch (ArtistNotFoundException e) {
-			System.out.println("Hey, we didn't find artist " + e.getArtist() + ". Try again!");
-			return true;
 		}
 		catch (IOException e) {
 			System.err.println("Error reading query from console");
 			e.printStackTrace();
 			return true;
-		}		
+		}	 catch (Exception e) {
+			System.out.println("No artist found.");
+			e.printStackTrace();
+			return true;
+		}	
 		
 		boolean continu = continu();
 		while (continu) {

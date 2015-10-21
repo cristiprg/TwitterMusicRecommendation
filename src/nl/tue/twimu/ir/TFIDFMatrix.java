@@ -30,6 +30,9 @@ import nl.tue.twimu.model.Artist;
  * three policies NO_PAGE_RANK, USE_PAGE_RANK or USE_INVERTED_PAGE_RANK
  */
 public class TFIDFMatrix implements Serializable{
+	private static final long serialVersionUID = 1L;
+
+
 	final static Logger logger = Logger.getLogger(TFIDFMatrix.class);
 
 
@@ -181,7 +184,7 @@ public class TFIDFMatrix implements Serializable{
 			return 0.0;
 
 		// tf * log (N/df)
-		return matrix.get(i).get(j) * Math.log((double)N / docFreq);
+		return getMatrix().get(i).get(j) * Math.log((double)N / docFreq);
 	}
 
 	/**
@@ -224,7 +227,7 @@ public class TFIDFMatrix implements Serializable{
 			for (int j = 0; j < artists.size(); j++) {
 				if (j == 0)
 					str.append("\n" + terms.get(i) + "\t");
-				str.append(matrix.get(i).get(j) + "\t");
+				str.append(getMatrix().get(i).get(j) + "\t");
 			}
 		return str.toString();
 	}

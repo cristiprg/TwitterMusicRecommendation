@@ -107,9 +107,14 @@ public class TwitterJSONReader {
 
 	static JSONArray openJason(File file) throws FileNotFoundException, IOException, ParseException {
 		JSONParser parser = new JSONParser();
-		Object obj = parser.parse(new FileReader(file));
-		JSONArray array = (JSONArray) obj;
-		return array;
+		JSONArray a=null;
+		try {
+			a = (JSONArray) parser.parse(new FileReader(file));
+		} catch (Exception e) {
+			System.err.println("Problem in file: "+file);
+			e.printStackTrace();
+		}
+		return a;
 	}
 	/**
 	 * Extracts the text out of a file.

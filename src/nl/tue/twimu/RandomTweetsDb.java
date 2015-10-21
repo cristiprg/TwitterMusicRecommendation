@@ -53,12 +53,12 @@ public class RandomTweetsDb extends TweetsDb {
 		//add 100 artists, artist0, artist1... artist99
 		for(i=0;i<numberUsers;i++)
 			// asdf asdf
-			//addArtist(new Artist("artist"+i, "Artist number "+i));
+			addArtist(new Artist(new Long(i),"artist"+i, "Artist number "+i));
 		
 		//add 10000 random tweets from 10000 random artists with dates in the past
 		for(i=0;i<numberTweets;i++) {
 			// asdf asdf
-			//addTweet("artist"+r.nextInt(numberUsers), new Tweet(generateRandomText(tweetWords), new Date(-r.nextInt(dateRange))));
+			addTweet(new Long(r.nextInt(numberUsers)), new Tweet(generateRandomText(tweetWords), new Date(-r.nextInt(dateRange))));
 		}
 	}
 

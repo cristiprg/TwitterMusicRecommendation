@@ -1,28 +1,12 @@
 package nl.tue.twimu.test;
 
-import static org.junit.Assert.*;
-
-import java.io.IOException;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.List;
-
-import nl.tue.twimu.ir.Indexer;
-import nl.tue.twimu.ir.Querier;
-import nl.tue.twimu.ir.TFIDFMatrix;
-import nl.tue.twimu.ml.ArtistNotFoundException;
-import nl.tue.twimu.ml.Rocchio;
 
 public class RocchioTest {
 
-	private final static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	//private final static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	
 	@Before
 	public void setUp() throws Exception {
@@ -76,15 +60,15 @@ public class RocchioTest {
 	}
 
 	// app
-	private static void showResults(List<String> results) {
+	/*private static void showResults(List<String> results) {
 		int counter = 1;
 		for (String s : results)
 			System.out.println((counter++) + ") " + s);
 
-	}
+	}*/
 
-	// not needed
-	private static TFIDFMatrix setUpMatrix() {
+	// not needed //then comment it away.
+	/* private static TFIDFMatrix setUpMatrix() {
 		TFIDFMatrix mx = null;
 		try {
 			mx = TFIDFMatrix.loadFromCache();
@@ -97,10 +81,11 @@ public class RocchioTest {
 			System.out.println("Data created succesfully!");
 		}
 		return mx;
-	}
+	}*/
 
+	//not used
 	// asks user what is relevant or not - 
-	private static int[] getRelevance(TFIDFMatrix mx, List<String> results) {
+	/*private static int[] getRelevance(TFIDFMatrix mx, List<String> results) {
 		int[] relevance = new int[mx.getArtists().size()];
 		try {
 			String consoleInp;
@@ -117,18 +102,19 @@ public class RocchioTest {
 			e.printStackTrace();
 		}
 		return relevance;
-	}
+	}*/
 
+	//name: continu... seriously? 	//not used
+	/*@Deprecated
 	private static boolean continu() {
 		try {
 			System.out.println("Would you like to refine your query? Y/n");
 			String consoleInp = br.readLine().toLowerCase();
-			if (consoleInp.equals("y"))
-				return true;
+			return (consoleInp.equals("y"));
 		} catch (IOException e) {
 			System.err.println("Error reading answer from console");
 			e.printStackTrace();
 		}
 		return false;
-	}
+	}*/
 }

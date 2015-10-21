@@ -1,18 +1,13 @@
 package nl.tue.twimu.pagerank;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.analysis.Analyzer.ReuseStrategy;
 
-import nl.tue.twimu.ir.Indexer;
 import nl.tue.twimu.model.Artist;
 import nl.tue.twimu.model.TweetsDb;
 

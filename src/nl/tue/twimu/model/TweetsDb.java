@@ -17,8 +17,6 @@ import java.util.zip.GZIPOutputStream;
 
 import org.apache.log4j.Logger;
 
-import nl.tue.twimu.ir.Indexer;
-
 public class TweetsDb implements Serializable {
 	final static Logger logger = Logger.getLogger(TweetsDb.class);
 	
