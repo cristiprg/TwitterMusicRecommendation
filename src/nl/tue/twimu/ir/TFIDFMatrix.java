@@ -40,7 +40,7 @@ public class TFIDFMatrix implements Serializable{
 	private ArrayList<String> terms;
 	private ArrayList<Integer> df; // df[i] = document frequency of term i
 	private ArrayList<ArrayList<Integer>> matrix;
-	public static final String fileName = "tfidf.gz";
+	public static final String fileName = "tfidf.db.gz";
 
 	/**
 	 * PageRank will not influence the returned tf.idf values.
@@ -168,23 +168,26 @@ public class TFIDFMatrix implements Serializable{
 	 * @return corresponding tf.idf value
 	 */
 	private Double getItem(int i, int j){
+		//this is not C!
 		// preconditions: i and j within bounds
-		if (!(i >= 0 && i < df.size() && j >= 0 && j < artists.size()))
-			return 0.0;
-
-
+		//if ((i >= 0 && i < df.size() && j >= 0 && j < artists.size())) 			return 0.0;
 		int N = artists.size();
 		int docFreq = df.get(i);
+		double a=0;
+		
+		try {
+			// tf * log (N/df)
+			a = getMatrix().get(i).get(j) * Math.log((double)N / docFreq);
+		} catch (Exception e) { //null, indexoutofbounds, divide by zero
+			return 0.0;
+		}
 
 		/*System.out.println("term = " + terms.get(i));
 		System.out.println("N = " + N);
-		System.out.println("docFreq = " + docFreq);*/
-
-		if (docFreq == 0 )
-			return 0.0;
-
-		// tf * log (N/df)
-		return getMatrix().get(i).get(j) * Math.log((double)N / docFreq);
+		System.out.println("docFreq = " + docFreq);
+		if (docFreq == 0 ) //this is still not c
+			return 0.0;*/
+		return a;
 	}
 
 	/**
