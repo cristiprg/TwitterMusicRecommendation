@@ -11,8 +11,8 @@ import nl.tue.twimu.model.Tweet;
 import nl.tue.twimu.model.TweetsDb;
 
 //FOR TESTING ONLY; DO NOT CHANGE/DEVELOP FURTHER UNLESS REALLY NEEDED
-
-public class RandomTweetsDb extends TweetsDb {
+@Deprecated
+public class  RandomTweetsDb extends TweetsDb {
 
 	//serialization
 	private static final long serialVersionUID = 1L;
