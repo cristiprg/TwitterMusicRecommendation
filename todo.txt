@@ -1,5 +1,0 @@
-Done:
-Serialization of objects and the caches
-Commenting it properly
-Caching all the getters
-Export all the properties to static final variables for more readability

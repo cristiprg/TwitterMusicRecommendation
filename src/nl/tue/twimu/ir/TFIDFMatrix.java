@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -30,8 +31,7 @@ import nl.tue.twimu.model.Artist;
  * three policies NO_PAGE_RANK, USE_PAGE_RANK or USE_INVERTED_PAGE_RANK
  */
 public class TFIDFMatrix implements Serializable{
-	private static final long serialVersionUID = 1L;
-
+	private static final long serialVersionUID = 1L;	
 
 	final static Logger logger = Logger.getLogger(TFIDFMatrix.class);
 
@@ -39,9 +39,11 @@ public class TFIDFMatrix implements Serializable{
 	private ArrayList<String> artists;
 	private ArrayList<String> terms;
 	private ArrayList<Integer> df; // df[i] = document frequency of term i
-	private ArrayList<ArrayList<Integer>> matrix;
 	public static final String fileName = "tfidf.db.gz";
+	//220mb memory, r u kiddin' me //public ArrayList<ArrayList<Integer>> matrix;
+	public TreeMap<Integer, Integer> h;
 
+	//TODO: ENUMS?
 	/**
 	 * PageRank will not influence the returned tf.idf values.
 	 */
@@ -62,11 +64,28 @@ public class TFIDFMatrix implements Serializable{
 	public final static int USE_INVERTED_PAGE_RANK = 2;
 
 	private ArrayList<Double> pageRank;
+	
+
+	public static final int SHIFT = 19;
+	
+	public void put(int i, int j, int val) {
+		if (val>0) {
+			//System.out.println(i+" "+j);
+			h.put(i+j<<SHIFT, val);
+		}
+	}
+	
+	public int get(int i, int j) {
+		Integer val = h.get(i+j<<SHIFT);
+		if(val==null)
+			val = 0;
+		return val;
+	}
 
 	public TFIDFMatrix(){
 		artists = new ArrayList<String>();
 		terms = new ArrayList<String>();
-		matrix = new ArrayList<ArrayList<Integer>>();
+		h = new TreeMap<>();
 		df = new ArrayList<Integer>();
 	}
 
@@ -112,34 +131,31 @@ public class TFIDFMatrix implements Serializable{
 			map.put(w, n);
 		}
 
-		// add one entry for each term vector - update length
-		for(int i = 0; i < terms.size(); ++i){
-			matrix.get(i).add(0);
-		}
-
 		// add term into the right place
+		int size = 0;
 		for (String term : map.keySet()){
 			// get the index of the term
 			int index = findIndexOf(term);
 
 			if (index != -1){
 				// if found, add the frequency of the term - just update the last item
-				matrix.get(index).set(artists.size()-1, map.get(term));
+				// matrix.get(index).set(artists.size()-1, map.get(term));
+				put(index, size, map.get(term));
 
 				// increment the document frequency of the term
 				df.set(index, df.get(index)+1);
 			}
 			else{
 				// if not found, 1) add the new term to the list of terms and 2) create a new entry in the
-				// matrix, fill it with zero's everything but the current artist
+				// matrix, fill it with zero's everything but the current artist+
+				index = terms.size();
 				terms.add(term);
-				ArrayList<Integer> newTermVector = new ArrayList<Integer>(Collections.nCopies(artists.size(), 0));
-				newTermVector.set(artists.size()-1, map.get(term));
-				matrix.add(newTermVector);
+				put(index, size, get(index,size)+1);
 
 				// also, add a new entry in the document frequency
 				df.add(1);
 			}
+			size++;
 		}
 	}
 
@@ -155,10 +171,6 @@ public class TFIDFMatrix implements Serializable{
 	 */
 	public ArrayList<String> getTerms() {
 		return terms;
-	}
-
-	private ArrayList<ArrayList<Integer>> getMatrix(){
-		return matrix;
 	}
 
 	/**
@@ -177,7 +189,7 @@ public class TFIDFMatrix implements Serializable{
 		
 		try {
 			// tf * log (N/df)
-			a = getMatrix().get(i).get(j) * Math.log((double)N / docFreq);
+			a = h.get(i+j<<SHIFT) * Math.log((double)N / docFreq);
 		} catch (Exception e) { //null, indexoutofbounds, divide by zero
 			return 0.0;
 		}
@@ -230,7 +242,7 @@ public class TFIDFMatrix implements Serializable{
 			for (int j = 0; j < artists.size(); j++) {
 				if (j == 0)
 					str.append("\n" + terms.get(i) + "\t");
-				str.append(getMatrix().get(i).get(j) + "\t");
+				str.append(getItem(i, j) + "\t");
 			}
 		return str.toString();
 	}
@@ -251,5 +263,4 @@ public class TFIDFMatrix implements Serializable{
 	private String termPreProcessing(String term){
 		return TermPreprocessor.termPreProcessing(term);
 	}
-
 }

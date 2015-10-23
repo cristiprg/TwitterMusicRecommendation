@@ -2,6 +2,9 @@ package nl.tue.twimu.ir;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -30,9 +33,10 @@ public class Indexer {
 		// either populate the DB, or load it
 		try {
 			logger.info("Loading objects from cache. Please be patient ...");
-
 			db = TweetsDb.loadFromCache();
+			logger.info("Db loaded.");
 			matrix = TFIDFMatrix.loadFromCache();
+			logger.info("TFIDF loaded.");
 		}
 		catch (ClassNotFoundException | IOException e) {
 			logger.warn("Could not load DB from cache. Repopulating DB and computing tf.idf matrix ...");
@@ -74,9 +78,10 @@ public class Indexer {
 		int count = 0;
 
 		// each artist is a document here
+		long time = System.currentTimeMillis();
 		for (Artist artist : db.getArtists().values()){
-			logger.info("Adding artist to tf.idf matrix:" + artist.getHandle() );
-
+			
+			logger.info("Added artist "+(count++)+"/"+db.getArtists().size()+" to tf.idf matrix:" + artist.getHandle() );
 			matrix.addAArtist(artist);
 
 			// keep matrix small if debugging
@@ -84,6 +89,7 @@ public class Indexer {
 				break;
 			}
 		}
+		logger.info("Creating time in ms: "+(System.currentTimeMillis()-time));
 
 		// set the page rank
 		pageRankBuilder = new PageRankBuilder(db);

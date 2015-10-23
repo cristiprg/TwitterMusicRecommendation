@@ -1,9 +1,19 @@
 package Main;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.sql.Time;
+import java.util.Date;
 import java.util.List;
+import java.util.TreeMap;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.log4j.BasicConfigurator;
 
@@ -40,8 +50,6 @@ public class Application {
 		indexer = new Indexer();
 		querier = new Querier(indexer, pageRankType);
 		mx = indexer.getMatrix();
-	
-		
 	}
 	
 	private boolean runQuery(){		

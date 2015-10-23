@@ -7,7 +7,7 @@ public class Querier {
 	private List<String> artists;
 	private List<String> terms;
 	// private List<ArrayList<Double>> matrix; // [i:term][j:artist]
-	private TFIDFMatrix matrix;
+	public TFIDFMatrix matrix;
 	
 	private int pageRankType = TFIDFMatrix.USE_PAGE_RANK;
 
