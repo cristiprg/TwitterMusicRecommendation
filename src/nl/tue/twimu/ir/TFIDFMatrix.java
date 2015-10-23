@@ -134,7 +134,7 @@ public class TFIDFMatrix implements Serializable{
 		int size = 0;
 		for (String term : map.keySet()){
 			// get the index of the term
-			int index = findIndexOf(term);
+			int index = terms.indexOf(term);
 
 			if (index != -1){
 				// if found, add the frequency of the term - just update the last item
@@ -244,19 +244,6 @@ public class TFIDFMatrix implements Serializable{
 				str.append(getItem(i, j) + "\t");
 			}
 		return str.toString();
-	}
-
-	/*
-	 * TODO: veeeery slow - change this
-	 */
-	private int findIndexOf(String term) {
-		for(int i = 0; i < terms.size(); ++i){
-			if (terms.get(i).equals(term)){
-				return i;
-			}
-		}
-
-		return -1;
 	}
 
 	private String termPreProcessing(String term){

@@ -9,19 +9,28 @@ public class Artist implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	
-	public Long twitterid; // just a big integer
-	public String handle; // @justinbieber
+	private Long twitterid; // just a big integer
+	private String handle; // @justinbieber
 	public String name; // Justin Bieber
+	private String description = null;
 	public ArrayList<Tweet> tweets = new ArrayList<>();
 
 	public LinkedList<String> idCache;
 	public LinkedList<String> hashCache;
+
 
 	public Artist(Long twitterid, String handle, String name) {
 		super();
 		this.twitterid = twitterid;
 		this.handle = handle;
 		this.name = name;
+	}
+
+	public Artist(Long twitterid, String handle, String name, String description) {
+		this(twitterid, handle, name);
+		if(description==null) 
+			description="";
+		this.description = description;
 	}
 
 	public String getHandle() {
@@ -35,6 +44,10 @@ public class Artist implements Serializable {
 	public String getName() {
 		return name;
 	}
+
+	public String getDescription() {
+		return description;
+	}
 	
 	public String getTweetsText() {
 		// for each tweet, get the text
@@ -42,7 +55,6 @@ public class Artist implements Serializable {
 		for (Tweet tweet : getTweets()) {
 			stringBuilder.append(tweet.text + " ");
 		}
-
 		return stringBuilder.toString();
 	}
 
@@ -75,5 +87,6 @@ public class Artist implements Serializable {
 		return "Name: " + name + "||" + "Username: " + handle + "||" + "Hashtags:" + getAllMentionedHashtags()
 				+ "||" + "TwitterIds:" + getAllMentionedTwitterIds();
 	}
+	
 
 }

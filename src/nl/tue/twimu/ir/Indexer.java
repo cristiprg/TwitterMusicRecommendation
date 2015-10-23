@@ -2,6 +2,10 @@ package nl.tue.twimu.ir;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
@@ -70,21 +74,30 @@ public class Indexer {
 	 * Adds each artist in the DB to the matrix which indexes each term found in his tweets. See TFIDFMatrix.addArtist for details.
 	 */
 	private void computeTFIDFMatrix() {
-
-		boolean DEBUG = false;
-		int count = 0;
+		//int count = 0;
 
 		// each artist is a document here
 		long time = System.currentTimeMillis();
+		ExecutorService ex = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()*2);
+		LinkedList<Callable<Integer>> tasks = new LinkedList<>();
 		for (Artist artist : db.getArtists().values()){
-			
-			logger.info("Added artist "+(count++)+"/"+db.getArtists().size()+" to tf.idf matrix:" + artist.getHandle() );
-			matrix.addAArtist(artist);
-
-			// keep matrix small if debugging
-			if (DEBUG && ++count > 10){
-				break;
-			}
+			//int cc = ++count; //to call count, it should have been final, but here it is out of scope
+			tasks.add(new Callable<Integer>() {
+				@Override
+				public Integer call() {
+					matrix.addAArtist(artist);
+					//logger.info sometimes omits some lines, so some lines can be missing in the output
+					//System.out.println("Added artist "+(cc)+"/"+db.getArtists().size()+" to tf.idf matrix:" + artist.getHandle() );
+					return 0;
+				}
+			});			
+		}
+		try {
+			ex.invokeAll(tasks);
+			ex.shutdown();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		logger.info("Creating time in ms: "+(System.currentTimeMillis()-time));
 

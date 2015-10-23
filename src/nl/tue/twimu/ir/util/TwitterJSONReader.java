@@ -96,13 +96,9 @@ public class TwitterJSONReader {
 	 * @throws ParseException 
 	 */
 	public static Artist getTweetsAuthor(File file) throws IOException, ParseException {
-		String[] name = new String[3];
 		JSONArray tweets = openJason(file);
 		JSONObject job = (JSONObject) ((JSONObject) tweets.get(0)).get("user");
-		name[0] = (String) job.get("screen_name");
-		name[1] = (String) job.get("name");
-		name[2] = job.get("id").toString();
-		return new Artist(Long.parseLong(name[2]), name[0], name[1]);
+		return new Artist(Long.parseLong(job.get("id").toString()), (String) job.get("screen_name"), (String) job.get("name"), (String) job.get("description"));
 	}
 
 	static JSONArray openJason(File file) throws FileNotFoundException, IOException, ParseException {
