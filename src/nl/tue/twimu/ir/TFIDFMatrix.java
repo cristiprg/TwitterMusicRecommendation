@@ -181,14 +181,12 @@ public class TFIDFMatrix implements Serializable{
 	private Double getItem(int i, int j){
 		//this is not C!
 		// preconditions: i and j within bounds
-		//if ((i >= 0 && i < df.size() && j >= 0 && j < artists.size())) 			return 0.0;
-		double a=0;
-		
+		//if ((i >= 0 && i < df.size() && j >= 0 && j < artists.size())) 			return 0.0;		
 		try {
 			int N = artists.size();
 			int docFreq = df.get(i);
 			// tf * log (N/df)
-			a = h.get(i+j<<SHIFT) * Math.log((double)N / docFreq);
+			return h.get(i+j<<SHIFT) * Math.log((double)N / docFreq);
 		} catch (Exception e) { //null, indexoutofbounds, divide by zero
 			return 0.0;
 		}
@@ -198,7 +196,6 @@ public class TFIDFMatrix implements Serializable{
 		System.out.println("docFreq = " + docFreq);
 		if (docFreq == 0 ) //this is still not c
 			return 0.0;*/
-		return a;
 	}
 
 	/**
