@@ -14,6 +14,7 @@ public class Artist implements Serializable {
 	public String name; // Justin Bieber
 	private String description = null;
 	public ArrayList<Tweet> tweets = new ArrayList<>();
+	private Style style = new Style();
 
 	public LinkedList<String> idCache;
 	public LinkedList<String> hashCache;
@@ -47,6 +48,10 @@ public class Artist implements Serializable {
 
 	public String getDescription() {
 		return description;
+	}
+	
+	public Style getStyle() {
+		return style;
 	}
 	
 	public String getTweetsText() {

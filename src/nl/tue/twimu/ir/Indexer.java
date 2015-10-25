@@ -20,7 +20,7 @@ import nl.tue.twimu.pagerank.PageRankBuilder;
 public class Indexer {
 	final static Logger logger = Logger.getLogger(Indexer.class);
 
-	private TweetsDb db;
+	public TweetsDb db;
 	private TFIDFMatrix matrix;
 
 	private PageRankBuilder pageRankBuilder;
@@ -70,11 +70,29 @@ public class Indexer {
 		return matrix;
 	}
 
+	private class AddCallable implements Callable<Integer> {
+		private Artist a;
+		//private int count;
+		
+		public AddCallable(Artist a, int count) {
+			this.a=a;
+			//this.count = count;
+		}
+		
+		@Override
+		public Integer call() {
+			matrix.addAArtist(a);
+			//logger.info sometimes omits some lines, so some lines can be missing in the output
+			//System.out.println("Added artist "+(count)+"/"+db.getArtists().size()+" to tf.idf matrix:" + a.getHandle() );
+			return 0;
+		}
+	}
+	
 	/**
 	 * Adds each artist in the DB to the matrix which indexes each term found in his tweets. See TFIDFMatrix.addArtist for details.
 	 */
 	private void computeTFIDFMatrix() {
-		//int count = 0;
+		int count = 0;
 
 		// each artist is a document here
 		long time = System.currentTimeMillis();
@@ -82,15 +100,7 @@ public class Indexer {
 		LinkedList<Callable<Integer>> tasks = new LinkedList<>();
 		for (Artist artist : db.getArtists().values()){
 			//int cc = ++count; //to call count, it should have been final, but here it is out of scope
-			tasks.add(new Callable<Integer>() {
-				@Override
-				public Integer call() {
-					matrix.addAArtist(artist);
-					//logger.info sometimes omits some lines, so some lines can be missing in the output
-					//System.out.println("Added artist "+(cc)+"/"+db.getArtists().size()+" to tf.idf matrix:" + artist.getHandle() );
-					return 0;
-				}
-			});			
+			tasks.add(new AddCallable(artist, count++));	
 		}
 		try {
 			ex.invokeAll(tasks);
@@ -111,7 +121,6 @@ public class Indexer {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
 		//System.out.println(matrix.toString());
 	}
 

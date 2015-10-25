@@ -40,6 +40,14 @@ public class Application {
 		indexer = new Indexer();
 		querier = new Querier(indexer, pageRankType);
 		mx = indexer.getMatrix();
+		
+		/* testing code
+		TweetsDb db = indexer.db;
+		for(Artist a:db.artists.values()) {
+			Style s = a.getStyle();
+			s.addWeightedFromText(a.getDescription(), 10.0);
+			s.addWeightedFromList(a.getAllMentionedHashtags(), 5.0);
+		}*/
 	}
 	
 	private boolean runQuery(){		
