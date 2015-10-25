@@ -182,11 +182,11 @@ public class TFIDFMatrix implements Serializable{
 		//this is not C!
 		// preconditions: i and j within bounds
 		//if ((i >= 0 && i < df.size() && j >= 0 && j < artists.size())) 			return 0.0;
-		int N = artists.size();
-		int docFreq = df.get(i);
 		double a=0;
 		
 		try {
+			int N = artists.size();
+			int docFreq = df.get(i);
 			// tf * log (N/df)
 			a = h.get(i+j<<SHIFT) * Math.log((double)N / docFreq);
 		} catch (Exception e) { //null, indexoutofbounds, divide by zero
