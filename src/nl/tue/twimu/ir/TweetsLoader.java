@@ -53,6 +53,7 @@ public class TweetsLoader {
 			}
 		}
 		try {
+			db.initStyles();
 			db.save();
 			logger.info("Database created and saved!");
 		} catch (IOException e) {

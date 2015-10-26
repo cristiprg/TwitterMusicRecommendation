@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -61,7 +62,6 @@ public class TweetsDb implements Serializable {
 		artists.put(artist.getTwitterid(), artist);
 		//logger.info("Added artist " + artist.getHandle());
 	}
-	
 	
 	//add a tweet from twitterhandle with text and timestamp
 	//addTweet("justinbieber", new Tweet("YOLO", new Date()));
@@ -123,11 +123,46 @@ public class TweetsDb implements Serializable {
 			if(++i>=artistsMax) break;
 		}
 	}
+	
+	public void initStyles() {
+		for(Artist a:artists.values()) {
+			Style s = a.getStyle();
+			s.addWeightedFromText(a.getDescription(), 10.0);
+			s.addWeightedFromList(a.getAllMentionedHashtags(), 5.0);
+			s.addWeightedFromTextList(a.getTweets(), 1.0);
+		}
+	}
 
 
 
 	@Deprecated //see new method with same name, just to be compatible with v0
 	public void addTweet(String twitterHandle, String text, Date timestamp) {
 		artists.get(twitterHandle).tweets.add(new Tweet(text, timestamp));
+	}
+
+	public List<String> artistsByGenre(String genre) {
+		LinkedList<String> li = new LinkedList<>();
+		for (Artist a : artists.values()) {
+			String g = a.getStyle().getFirst().toLowerCase();
+			if(g.equals("none")) { //try to get it from other artists
+				addFriendsGenre(a);
+				g = a.getStyle().getFirst().toLowerCase();
+			}
+			if(g.equals(genre))
+				li.add(a.getHandle());
+		}
+		return li;
+		
+	}
+
+	private void addFriendsGenre(Artist a) {
+		/*LinkedList<String> twis = a.getAllMentionedTwitterIds();
+		//later: better matching, original tweetsdb had a string to artist map
+		for (String friends : twis) {
+			for(Artist other:artists.values()) {
+				if(other.getHandle().equals(friends))
+					a.getStyle().addStyle(other.getStyle());
+			}
+		}*/
 	}
 }

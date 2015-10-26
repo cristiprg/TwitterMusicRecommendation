@@ -179,8 +179,7 @@ public class Querier {
 	public static double[] queryValues(String query, TFIDFMatrix mx, int pageRankType) throws Exception {
 		if (query.startsWith("@")){
 			return queryValuesArtist(query, mx, pageRankType);
-		}
-		else{
+		} else {
 			return queryValuesTerms(query, mx, pageRankType);
 		}
 	}
@@ -209,7 +208,11 @@ public class Querier {
 		double[] values = new double[mx.getTerms().size()];
 		for (String w : words){
 			w = TermPreprocessor.termPreProcessing(w);
-			values[mx.getTerms().indexOf(w)] = DEF_SCORE;
+			int index = mx.getTerms().indexOf(w);
+			if(index==-1)
+				return null;
+			values[index] = DEF_SCORE;
+			
 		}		
 		return values;
 	}

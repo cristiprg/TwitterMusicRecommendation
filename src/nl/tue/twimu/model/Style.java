@@ -1,6 +1,7 @@
 package nl.tue.twimu.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,6 +46,8 @@ public class Style implements Serializable {
 				maxPos = i;
 			}
 		}
+		if(maxPos==-1) 
+			return "none";
 		return styles[maxPos];
 	}
 
@@ -54,14 +57,28 @@ public class Style implements Serializable {
 				stylevector[i]+=weight;
 		}
 	}
+	
+	//could also be done considering TF-idf matrix or during initilaizing
+	public void addWeightedFromTextList(ArrayList<Tweet> arrayList, double weight) {
+		for (Tweet t : arrayList) {
+			addWeightedFromText(t.getText(), weight);
+		}
+	}
 
 	public void addWeightedFromList(LinkedList<String> allMentionedHashtags, double weight) {
-		List<String> sl = Arrays.asList(styles);
+		List<String> sl = new ArrayList<>(Arrays.asList(styles)); //must be a mutable list, otherwise retainall crashes
 		sl.retainAll(allMentionedHashtags);
 		for(String s:sl) {
 			int pos = stylesList.indexOf(s);
 			stylevector[pos]+=weight;
 		}
+	}
+
+	public void addStyle(Style style) {
+		for (int i=0;i<stylevector.length;i++) {
+			this.stylevector[i]+=style.stylevector[i];
+		}
+		
 	}
 
 }

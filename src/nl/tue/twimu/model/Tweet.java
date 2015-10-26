@@ -17,8 +17,8 @@ public class Tweet implements Serializable{
 	private static final Pattern twitterIdP = Pattern.compile("@[a-zA-Z0-9_]+");
 	
 	
-	public String text;
-	public Date timestamp;
+	private String text;
+	private Date timestamp;
 	
 	//constructor
 	public Tweet(String text, Date timestamp) {
@@ -27,9 +27,13 @@ public class Tweet implements Serializable{
 		this.timestamp = timestamp;
 	}
 	
-	//TODO: why do we need the timestamp?
+	//why do we need the timestamp? //it's just 4 bytes and we could use it later
 	public Tweet(String text){
 		this(text, new Date());
+	}
+	
+	public String getText() {
+		return text;
 	}
 	
 	//internal method, do not care
